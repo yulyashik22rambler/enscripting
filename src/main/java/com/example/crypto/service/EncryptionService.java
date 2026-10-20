@@ -8,6 +8,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -47,7 +48,7 @@ public class EncryptionService {
             GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
 
-            byte[] cipherText = cipher.doFinal(data.getBytes());
+            byte[] cipherText = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
 
             // Объединяем IV и зашифрованный текст в один массив для удобства хранения
             ByteBuffer byteBuffer = ByteBuffer.allocate(iv.length + cipherText.length);
@@ -83,7 +84,7 @@ public class EncryptionService {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
 
             byte[] plainText = cipher.doFinal(cipherText);
-            return new String(plainText);
+            return new String(plainText, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при дешифровании данных (возможно, неверный ключ): " + e.getMessage(), e);
         }
